@@ -27,9 +27,9 @@ steps:
 - task: FortifyOnDemandStatic@8
   inputs:
     FortifyProjects: '$(Build.Repository.LocalPath)'
-    FodConnection: 'FoD_Sandbox'    # create Azure DevOps Service connection with name FoD_AMS
+    FodConnection: 'FoD_EMEA'    # create Azure DevOps Service connection with name FoD_AMS
     ReleaseOptions: '0'
-    ReleaseId: 10269            # update FoD RELEASE ID
+    ReleaseId: 117828            # update FoD RELEASE ID
     EntitlementSelection: '1'
     EntitlementPreference: '2'
     OverrideScanSettings: '2'
