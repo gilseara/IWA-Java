@@ -1,0 +1,48 @@
+name: Fortify SSC SAST Scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  fortify-ssc-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+
+    steps:
+      - name: Check Out Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: 'temurin'
+
+      - name: Setup Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.8.2
+
+      - name: Build Application
+        run: mvn -B package -DskipTests
+
+      - name: Fortify SSC SAST Scan
+        uses: fortify/github-action@v3
+        env:
+          SSC_URL: ${{ vars.SSC_URL }}
+          SSC_TOKEN: ${{ secrets.SSC_TOKEN }}
+          SC_SAST_TOKEN: ${{ secrets.SC_SAST_TOKEN }}
+          SSC_APPVERSION: ${{ vars.SSC_APPVERSION }}
+          DO_SAST_SCAN: true
+          DO_WAIT: true
+          DO_APPVERSION_SUMMARY: true
+          DO_CHECK_POLICY: true
+          DO_SAST_EXPORT: true
+          DO_PR_COMMENT: ${{ github.event_name == 'pull_request' }}
