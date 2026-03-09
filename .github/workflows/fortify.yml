@@ -53,7 +53,7 @@ jobs:
           FOD_URL: ${{ vars.FOD_URL }}
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
-          # FOD_RELEASE: MyApp:main           # Optional: defaults to <repo>:<branch>
+          FOD_RELEASE: JG_Github:gilseara/IWAJava           # Optional: defaults to <repo>:<branch>
           # DO_SAST_SCAN: true                 # Enabled by default
           # DO_WAIT: true                      # Wait for scan completion (default: true)
           # DO_SAST_EXPORT: true               # Export SARIF results (default: true)
