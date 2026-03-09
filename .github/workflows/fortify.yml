@@ -60,4 +60,5 @@ jobs:
           # DO_RELEASE_SUMMARY: true           # Generate release summary (default: true)
           # DO_CHECK_POLICY: false             # Run policy check (default: false)
           # DO_PR_COMMENT: false               # Add PR comment (default: false, PREVIEW)
-          PACKAGE_EXTRA_OPTS: "-bt mvn -oss"
+          DO_SCA_SCAN: true
+          PACKAGE_EXTRA_OPTS: "-bt mvn"
