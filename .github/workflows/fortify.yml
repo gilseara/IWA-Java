@@ -30,56 +30,34 @@ jobs:
     steps:
       # Check out source code
       - name: Check Out Source Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Java is required to run the various Fortify utilities. When scanning a Java application, please use the appropriate Java version for building your application.
+      # Java is required to run the various Fortify utilities.
+      # When scanning a Java application, please use the appropriate Java version for building your application.
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 11
           distribution: 'temurin'
-          
-      # Setup Maven 3.8
-      - name: Setup Maven
-        uses: stCarolas/setup-maven@v4.5
-        with:
-          maven-version: 3.8.2
 
-      # Prepare source+dependencies for upload.  ScanCentral Client documentation is located at https://www.microfocus.com/documentation/fortify-software-security-center/
-      - name: Download Fortify ScanCentral Client
-        uses: fortify/gha-setup-scancentral-client@v2
-      - name: Package Code + Dependencies
-        run: scancentral package $PACKAGE_OPTS -o package.zip
+      # Build the project with Maven
+      - name: Build with Maven
+        run: mvn -B package -DskipTests
+
+      # Run Fortify on Demand SAST scan via the unified fortify/github-action.
+      # This action bootstraps fcli, packages the code, submits the scan,
+      # waits for results, and exports SARIF to GitHub Security tab.
+      - name: Run Fortify Scan
+        uses: fortify/github-action@v3
         env:
-          PACKAGE_OPTS: "-bt mvn -oss"
-
-      # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
-      - name: Download Fortify on Demand Universal CI Tool
-        uses: fortify/gha-setup-fod-uploader@v1
-      - name: Perform SAST Scan
-        run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
-        env:
-          FOD_URL: "https://emea.fortify.com/"
-          FOD_API_URL: "https://api.emea.fortify.com/"
-          FOD_TENANT: ${{ secrets.FOD_TENANT }}
-          FOD_USER: ${{ secrets.FOD_USER }}
-          FOD_PAT: ${{ secrets.FOD_PAT }}
-          FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
-          FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
-          FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
-
-      # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output.
-      - name: Export results to GitHub-optimized SARIF
-        uses: fortify/gha-export-vulnerabilities@v1
-        with:
-          fod_base_url: "https://emea.fortify.com/"
-          fod_tenant: ${{ secrets.FOD_TENANT }}
-          fod_user: ${{ secrets.FOD_USER }}
-          fod_password: ${{ secrets.FOD_PAT }}
-          fod_release_id: ${{ secrets.FOD_RELEASE_ID }}
-
-      # Import Fortify on Demand results to GitHub Security Code Scanning
-      - name: Import Results
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: ./gh-fortify-sast.sarif
+          FOD_URL: ${{ vars.FOD_URL }}
+          FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
+          FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
+          # FOD_RELEASE: MyApp:main           # Optional: defaults to <repo>:<branch>
+          # DO_SAST_SCAN: true                 # Enabled by default
+          # DO_WAIT: true                      # Wait for scan completion (default: true)
+          # DO_SAST_EXPORT: true               # Export SARIF results (default: true)
+          # DO_RELEASE_SUMMARY: true           # Generate release summary (default: true)
+          # DO_CHECK_POLICY: false             # Run policy check (default: false)
+          # DO_PR_COMMENT: false               # Add PR comment (default: false, PREVIEW)
+          PACKAGE_EXTRA_OPTS: "-bt mvn -oss"
