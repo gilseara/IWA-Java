@@ -2,10 +2,6 @@ name: Fortify SSC SAST Scan
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   fortify-ssc-scan:
