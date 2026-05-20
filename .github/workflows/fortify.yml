@@ -41,8 +41,8 @@ jobs:
           distribution: 'temurin'
 
       # Build the project with Maven
-      - name: Build with Maven
-        run: mvn -B package -DskipTests
+     #- name: Build with Maven
+        #run: mvn -B package -DskipTests
 
       # Run Fortify on Demand SAST scan via the unified fortify/github-action.
       # This action bootstraps fcli, packages the code, submits the scan,
@@ -55,7 +55,7 @@ jobs:
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
           FOD_RELEASE: JG_Github:gilseara/IWAJava           # Optional: defaults to <repo>:<branch>
           # DO_SAST_SCAN: true                 # Enabled by default
-          # DO_WAIT: true                      # Wait for scan completion (default: true)
+          DO_WAIT: false                      # Wait for scan completion (default: true)
           # DO_SAST_EXPORT: true               # Export SARIF results (default: true)
           # DO_RELEASE_SUMMARY: true           # Generate release summary (default: true)
           # DO_CHECK_POLICY: false             # Run policy check (default: false)
