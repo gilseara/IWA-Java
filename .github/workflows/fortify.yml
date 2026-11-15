@@ -54,9 +54,9 @@ jobs:
           FOD_RELEASE: JG_Github:IWAJava1     # Optional: defaults to <repo>:<branch>
           # DO_SAST_SCAN: true                 # Enabled by default
           # DO_WAIT: false                      # Wait for scan completion (default: true)
-          # DO_SAST_EXPORT: true               # Export SARIF results (default: true)
+          DO_SAST_EXPORT: true               # Export SARIF results (default: true)
           # DO_RELEASE_SUMMARY: true           # Generate release summary (default: true)
           DO_CHECK_POLICY: true             # Run policy check (default: false)
           DO_PR_COMMENT: true               # Add PR comment (default: false, PREVIEW)
-          DO_SCA_SCAN: false
+          DO_SCA_SCAN: true
           PACKAGE_EXTRA_OPTS: "-bt mvn"
